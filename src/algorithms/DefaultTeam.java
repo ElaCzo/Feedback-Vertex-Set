@@ -42,17 +42,20 @@ public class DefaultTeam {
         degresTries.put(degre, al);
       }
     }
+    System.out.println(degresTries);
 
     Evaluation e = new Evaluation();
 
+    Point p = null;
     while(!e.isValid(points, fvs, edgeThreshold)) {
-      al = degresTries.get(degresTries.size() - 1);
+      al = degresTries.get(degresTries.lastKey());
       while(al.isEmpty()) {
-        degresTries.remove(degresTries.size() - 1);
-        al = degresTries.get(degresTries.size() - 1);
+        degresTries.remove(degresTries.lastKey());
+        al = degresTries.get(degresTries.lastKey());
       }
-      fvs.add(al.remove(al.size()-1));
+      fvs.add(p=al.remove(al.size()-1));
     }
+
     return fvs;
   }
 }
