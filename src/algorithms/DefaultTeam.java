@@ -56,6 +56,42 @@ public class DefaultTeam {
       fvs.add(p=al.remove(al.size()-1));
     }
 
+    /* Local searching naïf */
+    ArrayList<Point> reste = new ArrayList<Point>();
+    reste.addAll(points);
+    reste.removeAll(fvs);
+    boolean continuer = true;
+    Point a, b, kk;
+    int i, j, k;
+
+    while(continuer) {
+      // shuffle ici
+      Collections.shuffle(fvs);
+      continuer=false;
+      for(i=0; i<fvs.size() && !continuer; i++) {
+        a=fvs.remove(i);
+        for (j = i + 1; j < fvs.size() && !continuer; j++) {
+          b = fvs.remove(j);
+
+          // shuffle reste aussi si ça prend pas trop de temps
+          Collections.shuffle(reste);
+          for(Point r : reste) {
+            fvs.add(r);
+            if(e.isValid(points, fvs, edgeThreshold)){
+              continuer=true;
+              reste.remove(r);
+              break;
+            }
+            fvs.remove(r);
+          }
+          if(!continuer)
+            fvs.add(b);
+        }
+        if(!continuer)
+          fvs.add(a);
+      }
+    }
+
     return fvs;
   }
 }
