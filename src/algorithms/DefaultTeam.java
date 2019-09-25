@@ -42,7 +42,6 @@ public class DefaultTeam {
         degresTries.put(degre, al);
       }
     }
-    System.out.println(degresTries);
 
     Evaluation e = new Evaluation();
 
@@ -61,7 +60,7 @@ public class DefaultTeam {
     reste.addAll(points);
     reste.removeAll(fvs);
     boolean continuer = true;
-    Point a, b, kk;
+    Point a, b, c;
     int i, j, k;
 
     while(continuer) {
@@ -83,6 +82,46 @@ public class DefaultTeam {
               break;
             }
             fvs.remove(r);
+          }
+          if(!continuer)
+            fvs.add(b);
+        }
+        if(!continuer)
+          fvs.add(a);
+      }
+    }
+
+    /* Local searching naïf trois pour deux. */
+    continuer=true;
+    while(continuer) {
+      // shuffle ici
+      Collections.shuffle(fvs);
+      continuer=false;
+      for(i=0; i<fvs.size() && !continuer; i++) {
+        a=fvs.remove(i);
+        for (j = i + 1; j < fvs.size() && !continuer; j++) {
+          b = fvs.remove(j);
+
+          for (k = j + 1; k < fvs.size() && !continuer; k++) {
+            c = fvs.remove(k);
+            // shuffle reste aussi si ça prend pas trop de temps
+            Collections.shuffle(reste);
+            for (Point r : reste) {
+              fvs.add(r);
+              for (Point s : reste) {
+                fvs.add(s);
+                if (e.isValid(points, fvs, edgeThreshold)) {
+                  continuer = true;
+                  reste.remove(r);
+                  reste.remove(s);
+                  break;
+                }
+                fvs.remove(s);
+              }
+              fvs.remove(r);
+            }
+            if(!continuer)
+              fvs.add(c);
           }
           if(!continuer)
             fvs.add(b);
