@@ -8,6 +8,10 @@ import java.util.*;
 //< 82,4 +1 point  1,5 point possible si inférieur à je sais pas combien. 2 points de bonus. touche g pour rendre le travail. ressucite 3 et je tue 2 à la place.
 public class DefaultTeam {
 
+  public boolean estArete(Point a, Point b, int edgeThreshold){
+    return a.distance(b)<edgeThreshold;
+  }
+
   public ArrayList<Point> calculFVS(ArrayList<Point> points, int edgeThreshold) {
     ArrayList<Point> fvs = new ArrayList<Point>();
 
@@ -106,28 +110,29 @@ public class DefaultTeam {
 
           for (k = j + 1; k < fvs.size() && !continuer; k++) {
             c = fvs.remove(k);
-            Collections.shuffle(reste);
-            for (r=0; r< reste.size() ; r++) {
+            if((estArete(a, b, edgeThreshold) && (estArete(b, c, edgeThreshold) || estArete(a, c, edgeThreshold)))
+                    || (estArete(b, c, edgeThreshold)) && estArete(a, c, edgeThreshold)) {
               Collections.shuffle(reste);
-              rr=reste.get(r);
-              fvs.add(rr);
-              for (s=r+1; s<reste.size() ; s++) {
-                ss=reste.get(s);
-                fvs.add(ss);
-                if (e.isValid(points, fvs, edgeThreshold)) {
-                  continuer = true;
-                  reste.remove(rr);
-                  reste.remove(ss);
-                  break;
+              for (r = 0; r < reste.size(); r++) {
+                Collections.shuffle(reste);
+                rr = reste.get(r);
+                fvs.add(rr);
+                for (s = r + 1; s < reste.size(); s++) {
+                  ss = reste.get(s);
+                  fvs.add(ss);
+                  if (e.isValid(points, fvs, edgeThreshold)) {
+                    continuer = true;
+                    reste.remove(rr);
+                    reste.remove(ss);
+                    break;
+                  } else
+                    fvs.remove(ss);
                 }
-                else
-                  fvs.remove(ss);
+                if (continuer)
+                  break;
+                else if (!continuer)
+                  fvs.remove(rr);
               }
-              if(continuer)
-                break;
-              else
-              if(!continuer)
-                fvs.remove(rr);
             }
             if(!continuer)
               fvs.add(c);
