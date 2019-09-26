@@ -68,58 +68,78 @@ public class DefaultTeam {
     continuer=true;
     int r, s;
     Point rr, ss;
-    while(continuer) {
-      // shuffle ici
-      Collections.shuffle(fvs);
-      continuer=false;
-      for(i=0; i< fvs.size() && !continuer; i++) {
-        Collections.shuffle(fvs);
-        a=fvs.remove(i);
-        for (j = i + 1; j < fvs.size() && !continuer; j++) {
-          b = fvs.remove(j);
+    points = (ArrayList<Point>)pointsIn.clone();
+    result = (ArrayList<Point>)pointsIn.clone();
 
-          for (k = j + 1; k < fvs.size() && !continuer; k++) {
-            c = fvs.remove(k);
-            if((estArete(a, b, edgeThreshold) && (estArete(b, c, edgeThreshold) || estArete(a, c, edgeThreshold)))
-                    || (estArete(b, c, edgeThreshold)) && estArete(a, c, edgeThreshold)) {
-              Collections.shuffle(reste);
-              for (r = 0; r < reste.size(); r++) {
-                Collections.shuffle(reste);
-                rr = reste.get(r);
-                fvs.add(rr);
-                for (s = r + 1; s < reste.size(); s++) {
-                  ss = reste.get(s);
-                  fvs.add(ss);
-                  if (e.isValid(points, fvs, edgeThreshold)) {
-                    continuer = true;
-                    reste.remove(rr);
-                    reste.remove(ss);
-                    break;
-                  } else
-                    fvs.remove(ss);
-                }
-                if (continuer)
-                  break;
-                else if (!continuer)
-                  fvs.remove(rr);
-              }
-            }
-            if(!continuer)
-              fvs.add(c);
-          }
-          if(!continuer)
-            fvs.add(b);
-        }
-        if(!continuer)
-          fvs.add(a);
-      }
-    }
-
-    System.out.println("Local searching 3->2 : "+fvs.size());
 
     result = (ArrayList<Point>)fvs.clone();
     rest = (ArrayList<Point>)reste.clone();
     ArrayList<Point> fvsClone= (ArrayList<Point>)fvs.clone();
+
+    for (int t=0;t<20;t++) {
+      Collections.shuffle(points, new Random(System.nanoTime()));
+      reste = (ArrayList<Point>) rest.clone();
+      fvs = (ArrayList<Point>)fvsClone.clone();
+
+      while (continuer) {
+        // shuffle ici
+        Collections.shuffle(fvs);
+        continuer = false;
+        for (i = 0; i < fvs.size() && !continuer; i++) {
+          Collections.shuffle(fvs);
+          a = fvs.remove(i);
+          for (j = i + 1; j < fvs.size() && !continuer; j++) {
+            b = fvs.remove(j);
+
+            for (k = j + 1; k < fvs.size() && !continuer; k++) {
+              c = fvs.remove(k);
+              if ((estArete(a, b, edgeThreshold) && (estArete(b, c, edgeThreshold) || estArete(a, c, edgeThreshold)))
+                      || (estArete(b, c, edgeThreshold)) && estArete(a, c, edgeThreshold)) {
+                Collections.shuffle(reste);
+                for (r = 0; r < reste.size(); r++) {
+                  Collections.shuffle(reste);
+                  rr = reste.get(r);
+                  fvs.add(rr);
+                  for (s = r + 1; s < reste.size(); s++) {
+                    ss = reste.get(s);
+                    fvs.add(ss);
+                    if (e.isValid(points, fvs, edgeThreshold)) {
+                      continuer = true;
+                      reste.remove(rr);
+                      reste.remove(ss);
+                      break;
+                    } else
+                      fvs.remove(ss);
+                  }
+                  if (continuer)
+                    break;
+                  else if (!continuer)
+                    fvs.remove(rr);
+                }
+              }
+              if (!continuer)
+                fvs.add(c);
+            }
+            if (!continuer)
+              fvs.add(b);
+          }
+          if (!continuer)
+            fvs.add(a);
+        }
+      }
+      System.out.println("GR. Current sol: " + result.size() + ". Found next sol: "+fvs.size());
+
+      if (fvs.size()<result.size())
+        result = fvs;
+    }
+
+    System.out.println("Local searching 3->2 : "+fvs.size());
+
+    fvs=result;
+
+    result = (ArrayList<Point>)fvs.clone();
+    rest = (ArrayList<Point>)reste.clone();
+    fvsClone= (ArrayList<Point>)fvs.clone();
 
     for(int t=0; t<20; t++) {
       reste = (ArrayList<Point>)rest.clone();
@@ -163,8 +183,6 @@ public class DefaultTeam {
     System.out.println("Local searching 1->2 : "+fvs.size());
 
     fvs=result;
-
-    // rajouter la suppression sans rajout. Vérifier que ça sert à quelque chose
 
     return fvs;
   }
