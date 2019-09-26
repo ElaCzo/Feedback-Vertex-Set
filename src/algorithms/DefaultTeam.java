@@ -54,7 +54,8 @@ public class DefaultTeam {
         degresTries.remove(degresTries.lastKey());
         al = degresTries.get(degresTries.lastKey());
       }
-      fvs.add(p=al.remove(al.size()-1));
+      if(Math.random()<0.70)
+        fvs.add(p=al.remove(al.size()-1));
     }
 
     /* Local searching naïf */
@@ -64,35 +65,6 @@ public class DefaultTeam {
     boolean continuer = true;
     Point a, b, c;
     int i, j, k;
-
-    while (continuer) {
-      // shuffle ici
-      Collections.shuffle(fvs);
-      continuer = false;
-      for (i = 0; i < fvs.size() && !continuer; i++) {
-        a = fvs.remove(i);
-        System.out.println("i="+i);
-        for (j = i + 1; j < fvs.size() && !continuer; j++) {
-          b = fvs.remove(j);
-
-          // shuffle reste aussi si ça prend pas trop de temps
-          Collections.shuffle(reste);
-          for (Point r : reste) {
-            fvs.add(r);
-            if (e.isValid(points, fvs, edgeThreshold)) {
-              continuer = true;
-              reste.remove(r);
-              break;
-            }
-            fvs.remove(r);
-          }
-          if (!continuer)
-            fvs.add(b);
-        }
-        if (!continuer)
-          fvs.add(a);
-      }
-    }
 
     /* Local searching naïf trois pour deux. */
     continuer=true;
@@ -144,6 +116,40 @@ public class DefaultTeam {
           fvs.add(a);
       }
     }
+
+    System.out.println("Local searching 3->2 : "+fvs.size());
+
+    continuer=true;
+    while (continuer) {
+      // shuffle ici
+      Collections.shuffle(fvs);
+      continuer = false;
+      for (i = 0; i < fvs.size() && !continuer; i++) {
+        a = fvs.remove(i);
+        for (j = i + 1; j < fvs.size() && !continuer; j++) {
+          b = fvs.remove(j);
+
+          // shuffle reste aussi si ça prend pas trop de temps
+          Collections.shuffle(reste);
+          for (Point u : reste) {
+            fvs.add(u);
+            if (e.isValid(points, fvs, edgeThreshold)) {
+              continuer = true;
+              reste.remove(u);
+              break;
+            }
+            fvs.remove(u);
+          }
+          if (!continuer)
+            fvs.add(b);
+        }
+        if (!continuer)
+          fvs.add(a);
+      }
+    }
+
+    System.out.println("Local searching 1->2 : "+fvs.size());
+
 
     return fvs;
   }
