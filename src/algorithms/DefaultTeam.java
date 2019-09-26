@@ -32,7 +32,7 @@ public class DefaultTeam {
       degres.add(points.indexOf(p), cpt);
     }
 
-    int degre=-1;
+    /*int degre=-1;
     ArrayList<Point> al;
     for(int i=0; i<points.size(); i++) {
       degre=degres.get(i);
@@ -56,6 +56,16 @@ public class DefaultTeam {
       }
       if(Math.random()<0.70)
         fvs.add(p=al.remove(al.size()-1));
+    }*/
+
+    Evaluation e = new Evaluation();
+    int rand;
+    Point p;
+    while(!e.isValid(points, fvs, edgeThreshold)){
+      rand=(int)(Math.random()*points.size());
+      p=points.get(rand);
+      if(!fvs.contains(p))
+        fvs.add(p);
     }
 
     /* Local searching naïf */
