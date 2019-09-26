@@ -94,6 +94,9 @@ public class DefaultTeam {
                     continuer = true;
                     reste.remove(rr);
                     reste.remove(ss);
+                    /*reste.add(a);
+                    reste.add(b);
+                    reste.add(c);*/
                     break;
                   } else
                     fvs.remove(ss);
@@ -135,16 +138,20 @@ public class DefaultTeam {
           for (j = i + 1; j < fvs.size() && !continuer; j++) {
             b = fvs.remove(j);
 
-            // shuffle reste aussi si ça prend pas trop de temps
-            Collections.shuffle(reste);
-            for (Point u : reste) {
-              fvs.add(u);
-              if (e.isValid(points, fvs, edgeThreshold)) {
-                continuer = true;
-                reste.remove(u);
-                break;
+            if(estArete(a, b, edgeThreshold)) {
+              // shuffle reste aussi si ça prend pas trop de temps
+              Collections.shuffle(reste);
+              for (Point u : reste) {
+                fvs.add(u);
+                if (e.isValid(points, fvs, edgeThreshold)) {
+                  continuer = true;
+                  reste.remove(u);
+                  /*reste.add(a);
+                  reste.add(b);*/
+                  break;
+                }
+                fvs.remove(u);
               }
-              fvs.remove(u);
             }
             if (!continuer)
               fvs.add(b);
