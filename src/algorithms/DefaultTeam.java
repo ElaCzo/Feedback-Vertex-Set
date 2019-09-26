@@ -19,6 +19,7 @@ public class DefaultTeam {
     TreeMap<Integer, ArrayList<Point>> degresTries = new TreeMap<>();
 
     int cpt;
+    long seed = System.nanoTime();
 
     for(int i=0; i<points.size(); i++) {
       Point p = points.get(i);
@@ -72,10 +73,9 @@ public class DefaultTeam {
     Point rr, ss;
     while(continuer) {
       // shuffle ici
-      Collections.shuffle(fvs);
+      Collections.shuffle(fvs, new Random(seed));
       continuer=false;
       for(i=0; i< fvs.size() && !continuer; i++) {
-        Collections.shuffle(fvs);
         a=fvs.remove(i);
         for (j = i + 1; j < fvs.size() && !continuer; j++) {
           b = fvs.remove(j);
@@ -84,9 +84,8 @@ public class DefaultTeam {
             c = fvs.remove(k);
             if((estArete(a, b, edgeThreshold) && (estArete(b, c, edgeThreshold) || estArete(a, c, edgeThreshold)))
                     || (estArete(b, c, edgeThreshold)) && estArete(a, c, edgeThreshold)) {
-              Collections.shuffle(reste);
+              Collections.shuffle(reste, new Random(seed));
               for (r = 0; r < reste.size(); r++) {
-                Collections.shuffle(reste);
                 rr = reste.get(r);
                 fvs.add(rr);
                 for (s = r + 1; s < reste.size(); s++) {
@@ -122,7 +121,7 @@ public class DefaultTeam {
     continuer=true;
     while (continuer) {
       // shuffle ici
-      Collections.shuffle(fvs);
+      Collections.shuffle(fvs, new Random(seed));
       continuer = false;
       for (i = 0; i < fvs.size() && !continuer; i++) {
         a = fvs.remove(i);
@@ -130,7 +129,7 @@ public class DefaultTeam {
           b = fvs.remove(j);
 
           // shuffle reste aussi si ça prend pas trop de temps
-          Collections.shuffle(reste);
+          Collections.shuffle(reste, new Random(seed));
           for (Point u : reste) {
             fvs.add(u);
             if (e.isValid(points, fvs, edgeThreshold)) {
