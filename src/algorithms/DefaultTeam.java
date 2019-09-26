@@ -31,10 +31,11 @@ public class DefaultTeam {
 
     ArrayList<Point> points = (ArrayList<Point>)pointsIn.clone();
     ArrayList<Point> result = (ArrayList<Point>)pointsIn.clone();
+    ArrayList<Point> rest;
 
     for (int i=0;i<100;i++) {
       Collections.shuffle(points, new Random(System.nanoTime()));
-      ArrayList<Point> rest = (ArrayList<Point>)points.clone();
+      rest = (ArrayList<Point>)points.clone();
       fvs = new ArrayList<Point>();
 
       while (!e.isValid(points, fvs, edgeThreshold)) {
@@ -116,37 +117,54 @@ public class DefaultTeam {
 
     System.out.println("Local searching 3->2 : "+fvs.size());
 
-    continuer=true;
-    while (continuer) {
-      // shuffle ici
-      Collections.shuffle(fvs);
-      continuer = false;
-      for (i = 0; i < fvs.size() && !continuer; i++) {
-        a = fvs.remove(i);
-        for (j = i + 1; j < fvs.size() && !continuer; j++) {
-          b = fvs.remove(j);
+    result = (ArrayList<Point>)fvs.clone();
+    rest = (ArrayList<Point>)reste.clone();
+    ArrayList<Point> fvsClone= (ArrayList<Point>)fvs.clone();
 
-          // shuffle reste aussi si ça prend pas trop de temps
-          Collections.shuffle(reste);
-          for (Point u : reste) {
-            fvs.add(u);
-            if (e.isValid(points, fvs, edgeThreshold)) {
-              continuer = true;
-              reste.remove(u);
-              break;
+    for(int t=0; t<20; t++) {
+      reste = (ArrayList<Point>)rest.clone();
+      fvs = (ArrayList<Point>)fvsClone.clone();
+
+      continuer = true;
+      while (continuer) {
+        // shuffle ici
+        Collections.shuffle(fvs);
+        continuer = false;
+        for (i = 0; i < fvs.size() && !continuer; i++) {
+          a = fvs.remove(i);
+          for (j = i + 1; j < fvs.size() && !continuer; j++) {
+            b = fvs.remove(j);
+
+            // shuffle reste aussi si ça prend pas trop de temps
+            Collections.shuffle(reste);
+            for (Point u : reste) {
+              fvs.add(u);
+              if (e.isValid(points, fvs, edgeThreshold)) {
+                continuer = true;
+                reste.remove(u);
+                break;
+              }
+              fvs.remove(u);
             }
-            fvs.remove(u);
+            if (!continuer)
+              fvs.add(b);
           }
           if (!continuer)
-            fvs.add(b);
+            fvs.add(a);
         }
-        if (!continuer)
-          fvs.add(a);
       }
+
+      System.out.println("GR. Current sol: " + result.size() + ". Found next sol: "+fvs.size());
+
+      if (fvs.size()<result.size())
+        result = fvs;
     }
 
     System.out.println("Local searching 1->2 : "+fvs.size());
 
+    fvs=result;
+
+    // rajouter la suppression sans rajout. Vérifier que ça sert à quelque chose
 
     return fvs;
   }
