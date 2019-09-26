@@ -62,63 +62,80 @@ public class DefaultTeam {
     boolean continuer = true;
     Point a, b, c;
     int i, j, k;
+    int chgmt1=0;
 
-    while(continuer) {
-      // shuffle ici
-      Collections.shuffle(fvs);
-      continuer=false;
-      for(i=0; i<fvs.size() && !continuer; i++) {
-        a=fvs.remove(i);
-        for (j = i + 1; j < fvs.size() && !continuer; j++) {
-          b = fvs.remove(j);
+      while (continuer) {
+        // shuffle ici
+        Collections.shuffle(fvs);
+        continuer = false;
+        for (i = 0; i < fvs.size() && !continuer; i++) {
+          a = fvs.remove(i);
+          for (j = i + 1; j < fvs.size() && !continuer; j++) {
+            b = fvs.remove(j);
 
-          // shuffle reste aussi si ça prend pas trop de temps
-          Collections.shuffle(reste);
-          for(Point r : reste) {
-            fvs.add(r);
-            if(e.isValid(points, fvs, edgeThreshold)){
-              continuer=true;
-              reste.remove(r);
-              break;
+            // shuffle reste aussi si ça prend pas trop de temps
+            Collections.shuffle(reste);
+            for (Point r : reste) {
+              fvs.add(r);
+              if (e.isValid(points, fvs, edgeThreshold)) {
+                continuer = true;
+                reste.remove(r);
+                chgmt1++;
+                break;
+              }
+              fvs.remove(r);
             }
-            fvs.remove(r);
+            if (!continuer)
+              fvs.add(b);
           }
-          if(!continuer)
-            fvs.add(b);
+          if (!continuer)
+            fvs.add(a);
         }
-        if(!continuer)
-          fvs.add(a);
       }
-    }
+      System.out.println("Loc search naif : " + chgmt1);
 
     /* Local searching naïf trois pour deux. */
     continuer=true;
+    int r, s;
+    Point rr, ss;
+    int chgmt=0;
     while(continuer) {
       // shuffle ici
       Collections.shuffle(fvs);
       continuer=false;
-      for(i=0; i<fvs.size() && !continuer; i++) {
+      for(i=0; i< fvs.size() && !continuer; i++) {
+        Collections.shuffle(fvs);
         a=fvs.remove(i);
+        System.out.println("i="+i);
         for (j = i + 1; j < fvs.size() && !continuer; j++) {
           b = fvs.remove(j);
 
           for (k = j + 1; k < fvs.size() && !continuer; k++) {
             c = fvs.remove(k);
-            // shuffle reste aussi si ça prend pas trop de temps
             Collections.shuffle(reste);
-            for (Point r : reste) {
-              fvs.add(r);
-              for (Point s : reste) {
-                fvs.add(s);
+            for (r=0; r< reste.size() ; r++) {
+              Collections.shuffle(reste);
+              rr=reste.get(r);
+              fvs.add(rr);
+              for (s=r+1; s<reste.size() ; s++) {
+                ss=reste.get(s);
+                fvs.add(ss);
                 if (e.isValid(points, fvs, edgeThreshold)) {
                   continuer = true;
-                  reste.remove(r);
-                  reste.remove(s);
+                  reste.remove(rr);
+                  reste.remove(ss);
+                  chgmt++;
+                  System.out.println("*");
                   break;
                 }
-                fvs.remove(s);
+                else
+                  fvs.remove(ss);
               }
-              fvs.remove(r);
+              if(continuer)
+                break;
+              else
+              if(!continuer)
+                fvs.remove(rr);
             }
             if(!continuer)
               fvs.add(c);
@@ -130,6 +147,8 @@ public class DefaultTeam {
           fvs.add(a);
       }
     }
+
+    //System.out.println("Nombre de changements : "+chgmt);
 
     return fvs;
   }
