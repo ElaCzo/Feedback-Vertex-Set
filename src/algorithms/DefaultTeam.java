@@ -173,7 +173,10 @@ public class DefaultTeam {
                     fvs = (ArrayList<Point>) fvs_tmp.clone();
                 }
             }
+            if (fvs.size() < result.size())
+                result = fvs;
         }
+        fvs = result;
 
         System.out.println("Taille fvs après méthode 3 : " + fvs.size());
 
@@ -308,6 +311,53 @@ public class DefaultTeam {
 
         System.out.println("After deleting min degrees : " + fvs.size());
 
+        return fvs;
+    }
+
+    private class Arete {
+        public Point a;
+        public Point b;
+
+        public Arete(Point a, Point b){
+            this.a = a;
+            this.b = b;
+        }
+    }
+
+    public ArrayList<Arete> createAreteList(ArrayList<Point> points){
+        ArrayList<Arete> retour = new ArrayList<>();
+        ArrayList<Point> pointsTmp = (ArrayList<Point>) points.clone();
+        while(pointsTmp.size() > 1){
+            Point p = pointsTmp.get(0);
+            ArrayList<Point> voisins = voisins(p,pointsTmp);
+            for (Point q : voisins){
+                Arete arete = new Arete(p, q);
+                retour.add(arete);
+            }
+            pointsTmp.remove(p);
+        }
+        return retour;
+    }
+
+    public ArrayList<Point> newAlgo(ArrayList<Point> points) {
+        ArrayList<Point> fvs = new ArrayList<>();
+        ArrayList<Arete> aretes = createAreteList(points);
+
+        while(aretes.size()>0){
+            Collections.shuffle(aretes,new Random(System.nanoTime()));
+            Arete arete = aretes.remove(0);
+            fvs.add(arete.a);
+            fvs.add(arete.b);
+            ArrayList<Arete> toRemove = new ArrayList<>();
+            for (Arete tmp: aretes) {
+                if(tmp.a.equals(arete.a)||tmp.b.equals(arete.a)){
+                    toRemove.add(tmp);
+                } else if (tmp.a.equals(arete.b)||tmp.b.equals(arete.b)){
+                    toRemove.add(tmp);
+                }
+            }
+            aretes.removeAll(toRemove);
+        }
         return fvs;
     }
 }
