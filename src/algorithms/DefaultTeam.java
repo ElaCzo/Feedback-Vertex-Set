@@ -67,7 +67,7 @@ public class DefaultTeam {
         ArrayList<Point> rest;
 
         for (int i=0;i<100;i++) {
-            Collections.shuffle(points, new Random(System.nanoTime()));
+            Collections.shuffle(points, new Random(System.nanoTime()+i));
             rest = (ArrayList<Point>)points.clone();
             fvs = new ArrayList<Point>();
 
