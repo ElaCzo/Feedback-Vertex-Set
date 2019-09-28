@@ -56,17 +56,14 @@ public class DefaultTeam {
     }
 
     public ArrayList<Point> calculFVS(ArrayList<Point> points, int edgeThreshold) {
-        ArrayList<Integer> degres = new ArrayList<>();
-        TreeMap<Integer, ArrayList<Point>> degresTries = new TreeMap<>();
-        ArrayList<Point> fvs = new ArrayList<Point>();
+        ArrayList<Point> fvs;
 
         Evaluation e = new Evaluation();
 
-        int cpt;
         int degreMax=0, d;
         long seed = System.nanoTime();
 
-        ArrayList<Point> result = (ArrayList<Point>)pointsIn.clone();
+        ArrayList<Point> result = (ArrayList<Point>)points.clone();
         ArrayList<Point> rest;
 
         for (int i=0;i<100;i++) {
@@ -99,9 +96,7 @@ public class DefaultTeam {
         ArrayList<Point> reste = new ArrayList<Point>();
         reste.addAll(points);
         reste.removeAll(fvs);
-        boolean continuer = true;
-        Point a, b, c;
-        int i, j, k;
+        int i, j;
 
 
         result = (ArrayList<Point>)fvs.clone();
@@ -115,7 +110,7 @@ public class DefaultTeam {
             Collections.shuffle(fvs, new Random(seed));
             Point p;
             for (i = 0; i < degreMax; i++) {
-                for (j=0; j<fvs.size(); j++) {
+                for (j = 0; j<fvs.size(); j++) {
                     p=points.get(j);
                     if (degre(p, reste, edgeThreshold) <= i) {
                         fvs.remove(p);
