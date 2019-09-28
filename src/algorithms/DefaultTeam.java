@@ -117,6 +117,8 @@ public class DefaultTeam {
       }
     }
 
+    // si on veut le répéter plusieurs fois ne pas oublier reste.addAll(points) puis reste.removeAll(fvs)
+
     System.out.println("Local searching 3->2 : "+fvs.size());
 
     result = (ArrayList<Point>)fvs.clone();
