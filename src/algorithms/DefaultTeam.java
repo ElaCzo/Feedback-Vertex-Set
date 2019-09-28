@@ -63,6 +63,34 @@ public class DefaultTeam {
                 result = fvs;
         }
 
+        points = (ArrayList<Point>) pointsIn.clone();
+
+        for (int i = 0; i < 2000; i++) {
+            Collections.shuffle(points, new Random(System.nanoTime() + i));
+            rest = (ArrayList<Point>) points.clone();
+            fvs = new ArrayList<Point>();
+
+            while (!e.isValid(points, fvs, edgeThreshold)) {
+                Point choosenOne = rest.get(0);
+                for (Point p : rest)
+                    if (degre(p, rest, edgeThreshold) > degre(choosenOne, rest, edgeThreshold))
+                        choosenOne = p;
+
+                if ((d = degre(choosenOne, rest, edgeThreshold)) > degreMax)
+                    degreMax = d;
+
+                fvs.add(choosenOne);
+                rest.remove(choosenOne);
+            }
+            System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
+
+            if (fvs.size() < result.size())
+                result = fvs;
+        }
+
+        fvs = result;
+        System.out.println("Taille fvs : " + fvs.size());
+
         // rajouter le deuxième mode de recherche et garder le meilleur résultats.
 
         fvs = result;
