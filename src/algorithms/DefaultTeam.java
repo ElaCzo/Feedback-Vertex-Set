@@ -63,6 +63,9 @@ public class DefaultTeam {
                 result = fvs;
         }
 
+        fvs = result;
+        System.out.println("Taille fvs après méthode 1 : " + fvs.size());
+
         points = (ArrayList<Point>) pointsIn.clone();
 
         for (int i = 0; i < 2000; i++) {
@@ -89,12 +92,7 @@ public class DefaultTeam {
         }
 
         fvs = result;
-        System.out.println("Taille fvs : " + fvs.size());
-
-        // rajouter le deuxième mode de recherche et garder le meilleur résultats.
-
-        fvs = result;
-        System.out.println("Taille fvs : " + fvs.size());
+        System.out.println("Taille fvs après méthode 2 : " + fvs.size());
 
         /* Local searching naïf */
         ArrayList<Point> reste = new ArrayList<Point>();
