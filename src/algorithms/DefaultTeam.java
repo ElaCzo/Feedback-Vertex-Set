@@ -92,12 +92,10 @@ public class DefaultTeam {
         fvs=result;
         System.out.println("Taille fvs : "+fvs.size());
 
-
         ArrayList<Point> reste = new ArrayList<Point>();
         reste.addAll(points);
         reste.removeAll(fvs);
         int i, j;
-
 
         result = (ArrayList<Point>)fvs.clone();
         rest = (ArrayList<Point>)reste.clone();
@@ -107,7 +105,7 @@ public class DefaultTeam {
             reste = (ArrayList<Point>)rest.clone();
             fvs = (ArrayList<Point>)fvsClone.clone();
 
-            Collections.shuffle(fvs, new Random(seed));
+            Collections.shuffle(fvs, new Random(seed+t));
             Point p;
             for (i = 0; i < degreMax; i++) {
                 for (j = 0; j<fvs.size(); j++) {
