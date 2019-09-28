@@ -133,6 +133,7 @@ public class DefaultTeam {
         fvs=result;
 
         System.out.println("Taille fvs après méthode 2 : " + fvs.size());
+
         int i;
         ArrayList<Point> fvs_tmp = null;
         for(int ite = 0 ; ite < 2; ite++) {
@@ -173,6 +174,8 @@ public class DefaultTeam {
                 }
             }
         }
+
+        System.out.println("Taille fvs après méthode 3 : " + fvs.size());
 
         // Local searching naïf
         ArrayList<Point> reste = new ArrayList<Point>();
