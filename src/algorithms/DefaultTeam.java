@@ -164,45 +164,31 @@ public class DefaultTeam {
         rest = (ArrayList<Point>) reste.clone();
         ArrayList<Point> fvsClone = (ArrayList<Point>) fvs.clone();
 
-        for (int t = 0; t < 20; t++) {
-            reste = (ArrayList<Point>) rest.clone();
-            fvs = (ArrayList<Point>) fvsClone.clone();
+        // shuffle ici
+        Collections.shuffle(fvs, new Random(seed));
+        for (i = 0; i < fvs.size() && !continuer; i++) {
+            a = fvs.remove(i);
+            for (j = i + 1; j < fvs.size() && !continuer; j++) {
+                b = fvs.remove(j);
 
-            continuer = true;
-            while (continuer) {
-                // shuffle ici
-                Collections.shuffle(fvs, new Random(seed));
-                continuer = false;
-                for (i = 0; i < fvs.size() && !continuer; i++) {
-                    a = fvs.remove(i);
-                    for (j = i + 1; j < fvs.size() && !continuer; j++) {
-                        b = fvs.remove(j);
-
-                        if (estArete(a, b, edgeThreshold)) {
-                            // shuffle reste aussi si ça prend pas trop de temps
-                            Collections.shuffle(reste, new Random(seed));
-                            for (Point u : reste) {
-                                fvs.add(u);
-                                if (e.isValid(points, fvs, edgeThreshold)) {
-                                    continuer = true;
-                                    reste.remove(u);
-                                    break;
-                                }
-                                fvs.remove(u);
-                            }
+                if (estArete(a, b, edgeThreshold)) {
+                    // shuffle reste aussi si ça prend pas trop de temps
+                    Collections.shuffle(reste, new Random(seed));
+                    for (Point u : reste) {
+                        fvs.add(u);
+                        if (e.isValid(points, fvs, edgeThreshold)) {
+                            continuer = true;
+                            reste.remove(u);
+                            break;
                         }
-                        if (!continuer)
-                            fvs.add(b);
+                        fvs.remove(u);
                     }
-                    if (!continuer)
-                        fvs.add(a);
                 }
+                if (!continuer)
+                    fvs.add(b);
             }
-
-            System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
-
-            if (fvs.size() < result.size())
-                result = fvs;
+            if (!continuer)
+                fvs.add(a);
         }
 
         System.out.println("Local searching 1->2 : " + fvs.size());
