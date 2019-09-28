@@ -35,7 +35,7 @@ public class DefaultTeam {
 
         Point p;
 
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 5000; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
             fvs = (ArrayList<Point>) points.clone();
             rest = new ArrayList<Point>();
@@ -68,7 +68,7 @@ public class DefaultTeam {
 
         points = (ArrayList<Point>) pointsIn.clone();
 
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 5000; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
             rest = (ArrayList<Point>) points.clone();
             fvs = new ArrayList<Point>();
