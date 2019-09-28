@@ -74,7 +74,7 @@ public class DefaultTeam {
 
         Point p;
 
-        for (int i = 0; i < 8000; i++) {
+        for (int i = 0; i < 6000; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
             fvs = (ArrayList<Point>) points.clone();
             rest = new ArrayList<Point>();
@@ -107,7 +107,7 @@ public class DefaultTeam {
 
         points = (ArrayList<Point>) pointsIn.clone();
 
-        for (int i = 0; i < 8000; i++) {
+        for (int i = 0; i < 6000; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
             rest = (ArrayList<Point>) points.clone();
             fvs = new ArrayList<Point>();
@@ -130,6 +130,8 @@ public class DefaultTeam {
                 result = fvs;
         }
 
+        fvs=result;
+
         System.out.println("Taille fvs après méthode 2 : " + fvs.size());
         int i;
         ArrayList<Point> fvs_tmp = null;
@@ -144,8 +146,8 @@ public class DefaultTeam {
             }
             ArrayList<Point> neigh = voisins(maxi, pointsIn);
 
-             i = 0;
-             int high = neigh.size();
+            i = 0;
+            int high = neigh.size();
             while (i <= high) {
                 for (Point p2 : pointsIn) {
                     if (voisins(p2, pointsIn).size() <= i) {
