@@ -180,6 +180,16 @@ public class DefaultTeam {
 
         System.out.println("Taille fvs après méthode 3 : " + fvs.size());
 
+        for(int t=0; t<100 ; t++) {
+            fvs = newAlgo(points);
+            if (fvs.size() < result.size() && e.isValid(points, fvs, edgeThreshold))
+                result=fvs;
+        }
+
+        fvs=result;
+
+        System.out.println("Taille fvs après méthode 4 : " + fvs.size());
+
         // Local searching naïf
         ArrayList<Point> reste = new ArrayList<Point>();
         reste.addAll(points);
