@@ -33,22 +33,29 @@ public class DefaultTeam {
         ArrayList<Point> result = (ArrayList<Point>) pointsIn.clone();
         ArrayList<Point> rest;
 
+        Point p;
+
         for (int i = 0; i < 100; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
-            rest = (ArrayList<Point>) points.clone();
-            fvs = new ArrayList<Point>();
+            fvs = (ArrayList<Point>) points.clone();
+            rest = new ArrayList<Point>();
 
-            while (!e.isValid(points, fvs, edgeThreshold)) {
-                Point choosenOne = rest.get(0);
-                for (Point p : rest)
-                    if (degre(p, rest, edgeThreshold) > degre(choosenOne, rest, edgeThreshold))
+            for(int j=0 ; j<fvs.size(); j++) {
+                Point choosenOne = fvs.get(0);
+                for (int k = 0; k<fvs.size(); k++) {
+                    p = fvs.get(k);
+                    if (degre(p, rest, edgeThreshold) < degre(choosenOne, rest, edgeThreshold))
                         choosenOne = p;
+                }
 
                 if ((d = degre(choosenOne, rest, edgeThreshold)) > degreMax)
                     degreMax = d;
 
-                fvs.add(choosenOne);
-                rest.remove(choosenOne);
+                fvs.remove(choosenOne);
+                if(!e.isValid(points, fvs, edgeThreshold))
+                    fvs.add(choosenOne);
+                else
+                    rest.add(choosenOne);
             }
             System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
 
@@ -182,7 +189,6 @@ public class DefaultTeam {
             fvs = (ArrayList<Point>) fvsClone.clone();
 
             Collections.shuffle(fvs, new Random(seed + t));
-            Point p;
             for (i = 0; i < degreMax; i++) {
                 for (j = 0; j < fvs.size(); j++) {
                     p = points.get(j);
