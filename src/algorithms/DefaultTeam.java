@@ -55,7 +55,7 @@ public class DefaultTeam {
         return degree;
     }
 
-    public ArrayList<Point> calculFVS(ArrayList<Point> pointsIn, int edgeThreshold) {
+    public ArrayList<Point> calculFVS(ArrayList<Point> points, int edgeThreshold) {
         ArrayList<Integer> degres = new ArrayList<>();
         TreeMap<Integer, ArrayList<Point>> degresTries = new TreeMap<>();
         ArrayList<Point> fvs = new ArrayList<Point>();
@@ -66,7 +66,6 @@ public class DefaultTeam {
         int degreMax=0, d;
         long seed = System.nanoTime();
 
-        ArrayList<Point> points = (ArrayList<Point>)pointsIn.clone();
         ArrayList<Point> result = (ArrayList<Point>)pointsIn.clone();
         ArrayList<Point> rest;
 
@@ -105,23 +104,40 @@ public class DefaultTeam {
         int i, j, k;
 
 
-        Collections.shuffle(fvs, new Random(seed));
-        Point p;
-        for (i = 0; i < degreMax; i++) {
-            for (j=0; j<fvs.size(); j++) {
-                p=points.get(j);
-                if (degre(p, reste, edgeThreshold) <= i) {
-                    fvs.remove(p);
-                    if (!e.isValid(points, fvs, edgeThreshold)) {
-                        fvs.add(p);
+        result = (ArrayList<Point>)fvs.clone();
+        rest = (ArrayList<Point>)reste.clone();
+        ArrayList<Point> fvsClone= (ArrayList<Point>)fvs.clone();
+
+        for(int t=0; t<100; t++) {
+            reste = (ArrayList<Point>)rest.clone();
+            fvs = (ArrayList<Point>)fvsClone.clone();
+
+            Collections.shuffle(fvs, new Random(seed));
+            Point p;
+            for (i = 0; i < degreMax; i++) {
+                for (j=0; j<fvs.size(); j++) {
+                    p=points.get(j);
+                    if (degre(p, reste, edgeThreshold) <= i) {
+                        fvs.remove(p);
+                        if (!e.isValid(points, fvs, edgeThreshold)) {
+                            fvs.add(p);
+                        }
+                        reste.add(p);
                     }
                 }
             }
+            System.out.println("GR. Current sol: " + result.size() + ". Found next sol: "+fvs.size());
+
+            fvs=result;
+
+            if (fvs.size()<result.size())
+                result = fvs;
         }
+
 
         System.out.println("After deleting min degrees : "+fvs.size());
 
-        continuer=true;
+        /*continuer=true;
         int r, s;
         Point rr, ss;
         while(continuer) {
@@ -218,7 +234,7 @@ public class DefaultTeam {
 
         System.out.println("Local searching 1->2 : "+fvs.size());
 
-        fvs=result;
+        fvs=result;*/
 
         // rajouter la suppression sans rajout. Vérifier que ça sert à quelque chose
 
