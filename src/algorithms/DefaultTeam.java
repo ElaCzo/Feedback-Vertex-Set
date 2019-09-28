@@ -35,7 +35,7 @@ public class DefaultTeam {
 
         Point p;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 2000; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
             fvs = (ArrayList<Point>) points.clone();
             rest = new ArrayList<Point>();
@@ -63,6 +63,8 @@ public class DefaultTeam {
                 result = fvs;
         }
 
+        // rajouter le deuxième mode de recherche et garder le meilleur résultats.
+
         fvs = result;
         System.out.println("Taille fvs : " + fvs.size());
 
@@ -74,6 +76,8 @@ public class DefaultTeam {
         Point a, b, c;
         int i, j, k;
 
+
+        // le faire itérer 10/20 fois :
         /* Local searching naïf trois pour deux. */
         continuer = true;
         int r=0, s=0;
