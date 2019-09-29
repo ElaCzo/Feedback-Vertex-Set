@@ -7,86 +7,39 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class DefaultTeam {
-    private class Arete {
-        public Point a;
-        public Point b;
-
-        public Arete(Point a, Point b){
-            this.a = a;
-            this.b = b;
-        }
-    }
-
-    public ArrayList<Arete> creeListeDAretes(ArrayList<Point> points){
-        ArrayList<Arete> retour = new ArrayList<>();
-        ArrayList<Point> pointsTmp = (ArrayList<Point>) points.clone();
-        while(pointsTmp.size() > 1){
-            Point p = pointsTmp.get(0);
-            ArrayList<Point> voisins = voisins(p,pointsTmp);
-            for (Point q : voisins){
-                Arete arete = new Arete(p, q);
-                retour.add(arete);
-            }
-            pointsTmp.remove(p);
-        }
-        return retour;
-    }
-
-    public ArrayList<Point> algoMethode4(ArrayList<Point> points) {
-        ArrayList<Point> fvs = new ArrayList<>();
-        ArrayList<Arete> aretes = creeListeDAretes(points);
-
-        while(aretes.size()>0){
-            Collections.shuffle(aretes, new Random(System.nanoTime()));
-            Arete arete = aretes.remove(0);
-            fvs.add(arete.a);
-            fvs.add(arete.b);
-            ArrayList<Arete> toRemove = new ArrayList<>();
-            for (Arete tmp: aretes) {
-                if(tmp.a.equals(arete.a)||tmp.b.equals(arete.a)){
-                    toRemove.add(tmp);
-                } else if (tmp.a.equals(arete.b)||tmp.b.equals(arete.b)){
-                    toRemove.add(tmp);
-                }
-            }
-            aretes.removeAll(toRemove);
-        }
-        return fvs;
-    }
-
-    public ArrayList<Point> improve(ArrayList<Point> points, ArrayList<Point> fvs, int threshold) {
-        ArrayList<Point> retour = (ArrayList<Point>) fvs.clone();
+    public ArrayList<Point> supprimePoints(ArrayList<Point> points, ArrayList<Point> fvs, int threshold) {
+        ArrayList<Point> result = (ArrayList<Point>) fvs.clone();
         Evaluation eval = new Evaluation();
         for (Point p : fvs) {
-            retour.remove(p);
-            if (!eval.isValid(points, retour, threshold)) retour.add(p);
+            result.remove(p);
+            if (!eval.isValid(points, result, threshold)) result.add(p);
         }
-        return retour;
+        return result;
     }
 
-    public ArrayList<Point> cleanUp(ArrayList<Point> points) {
-        ArrayList<Point> clone = (ArrayList<Point>) points.clone();
-        ArrayList<Point> neigh;
-        boolean stillAVertex = true;
-        while (stillAVertex) { // tant qu'il reste un vertex de degrés 1
-            stillAVertex = false;
-            ArrayList<Point> clone2 = (ArrayList<Point>) clone.clone();
-            for (Point p : clone2) { // pour chaque point on recherche les voisins
-                neigh = voisins(p, clone);
-                if (neigh.size() <= 1) { // si un seul voisin -> degré 1
-                    stillAVertex = true;
-                    clone.remove(p);
+    public ArrayList<Point> cleanup(ArrayList<Point> points, int edgeThreshold) {
+        ArrayList<Point> voisinsdeP;
+
+        boolean continuer = true;
+        while (continuer) {
+            continuer = false;
+            ArrayList<Point> points2 = (ArrayList<Point>) points.clone();
+            for (Point p : points2) {
+                voisinsdeP = voisins(p, points, edgeThreshold);
+                if (voisinsdeP.size() <= 1) {
+                    continuer = true;
+                    points.remove(p);
                 }
             }
         }
-        ArrayList<Point> retour = (ArrayList<Point>) clone.clone();
-        return retour;
+        ArrayList<Point> result = (ArrayList<Point>) points.clone();
+        return result;
     }
 
-    private ArrayList<Point> voisins(Point p, ArrayList<Point> vertices) {
+    private ArrayList<Point> voisins(Point p, ArrayList<Point> vertices, int edgeThreshold) {
         ArrayList<Point> result = new ArrayList<Point>();
 
-        for (Point point : vertices) if (point.distance(p) < 100 && !point.equals(p)) result.add((Point) point.clone());
+        for (Point point : vertices) if (point.distance(p) < edgeThreshold && !point.equals(p)) result.add((Point) point.clone());
 
         return result;
     }
@@ -120,21 +73,21 @@ public class DefaultTeam {
             Evaluation e = new Evaluation();
 
             for(int j=0 ; j<fvs.size(); j++) {
-                Point choosenOne = fvs.get(0);
+                Point pointDegreMax = fvs.get(0);
                 for (int k = 0; k<fvs.size(); k++) {
                     p = fvs.get(k);
-                    if (degre(p, rest, edgeThreshold) < degre(choosenOne, rest, edgeThreshold))
-                        choosenOne = p;
+                    if (degre(p, rest, edgeThreshold) < degre(pointDegreMax, rest, edgeThreshold))
+                        pointDegreMax = p;
                 }
 
-                if ((d = degre(choosenOne, rest, edgeThreshold)) > degreMax)
+                if ((d = degre(pointDegreMax, rest, edgeThreshold)) > degreMax)
                     degreMax = d;
 
-                fvs.remove(choosenOne);
+                fvs.remove(pointDegreMax);
                 if(!e.isValid(points, fvs, edgeThreshold))
-                    fvs.add(choosenOne);
+                    fvs.add(pointDegreMax);
                 else
-                    rest.add(choosenOne);
+                    rest.add(pointDegreMax);
             }
 
             if (fvs.size() < result.size())
@@ -185,27 +138,27 @@ public class DefaultTeam {
         ArrayList<Point> fvs_tmp = null;
         Evaluation e = new Evaluation();
 
-        for(int t=0; t<1000; t++) {
+        for(int t=0; t<100; t++) {
             Collections.shuffle(points, new Random(System.nanoTime() + t));
             for (int ite = 0; ite < 2; ite++) {
                 fvs = (ArrayList<Point>) points.clone();
-                Point maxi;
-                maxi = points.parallelStream().max(Comparator.comparingInt(element -> voisins(element, points).size())).get();
+                Point pointDegreMax;
+                pointDegreMax = points.parallelStream().max(Comparator.comparingInt(element -> voisins(element, points, edgeThreshold).size())).get();
                 ArrayList<Point> test = (ArrayList<Point>) points.clone();
                 if (ite == 1) {
-                    test.remove(maxi);
-                    maxi = test.parallelStream().max(Comparator.comparingInt(element -> voisins(element, test).size())).get();
+                    test.remove(pointDegreMax);
+                    pointDegreMax = test.parallelStream().max(Comparator.comparingInt(element -> voisins(element, test, edgeThreshold).size())).get();
                 }
 
-                ArrayList<Point> neigh = voisins(maxi, points);
+                ArrayList<Point> voisinsP = voisins(pointDegreMax, points, edgeThreshold);
 
                 i = 0;
-                int high = neigh.size();
-                while (i <= high) {
-                    for (Point p2 : points) {
-                        if (voisins(p2, points).size() <= i) {
-                            fvs.remove(p2);
-                            if (!e.isValid(points, fvs, edgeThreshold)) fvs.add(p2);
+                int degreMax = voisinsP.size();
+                while (i <= degreMax) {
+                    for (Point p : points) {
+                        if (voisins(p, points, edgeThreshold).size() <= i) {
+                            fvs.remove(p);
+                            if (!e.isValid(points, fvs, edgeThreshold)) fvs.add(p);
                         }
                     }
                     i++;
@@ -215,8 +168,8 @@ public class DefaultTeam {
                 int scoreTmp = Integer.MAX_VALUE;
                 while (score < scoreTmp) {
                     scoreTmp = fvs.size();
-                    improve(points, fvs, edgeThreshold);
-                    cleanUp(fvs);
+                    supprimePoints(points, fvs, edgeThreshold);
+                    cleanup(fvs, edgeThreshold);
                     score = fvs.size();
                 }
                 if (ite == 0) {
@@ -236,12 +189,59 @@ public class DefaultTeam {
         return fvs;
     }
 
+    private class Arete {
+        public Point a;
+        public Point b;
+
+        public Arete(Point a, Point b){
+            this.a = a;
+            this.b = b;
+        }
+    }
+
+    public ArrayList<Arete> creeListeDAretes(ArrayList<Point> points, int edgeThreshold){
+        ArrayList<Arete> retour = new ArrayList<>();
+        ArrayList<Point> pointsTmp = (ArrayList<Point>) points.clone();
+        while(pointsTmp.size() > 1){
+            Point p = pointsTmp.get(0);
+            ArrayList<Point> voisins = voisins(p, pointsTmp, edgeThreshold);
+            for (Point q : voisins){
+                Arete arete = new Arete(p, q);
+                retour.add(arete);
+            }
+            pointsTmp.remove(p);
+        }
+        return retour;
+    }
+
+    public ArrayList<Point> algoMethode4(ArrayList<Point> points, int edgeThreshold) {
+        ArrayList<Point> fvs = new ArrayList<>();
+        ArrayList<Arete> aretes = creeListeDAretes(points, edgeThreshold);
+
+        while(aretes.size()>0){
+            Collections.shuffle(aretes, new Random(System.nanoTime()));
+            Arete arete = aretes.remove(0);
+            fvs.add(arete.a);
+            fvs.add(arete.b);
+            ArrayList<Arete> toRemove = new ArrayList<>();
+            for (Arete tmp: aretes) {
+                if(tmp.a.equals(arete.a)||tmp.b.equals(arete.a)){
+                    toRemove.add(tmp);
+                } else if (tmp.a.equals(arete.b)||tmp.b.equals(arete.b)){
+                    toRemove.add(tmp);
+                }
+            }
+            aretes.removeAll(toRemove);
+        }
+        return fvs;
+    }
+
     private ArrayList<Point> methode4(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> result){
         ArrayList<Point> fvs;
         Evaluation e= new Evaluation();
 
-        for(int t=0; t<10000 ; t++) {
-            fvs = algoMethode4(points);
+        for(int t=0; t<100 ; t++) {
+            fvs = algoMethode4(points, edgeThreshold);
             if (fvs.size() < result.size() && e.isValid(points, fvs, edgeThreshold))
                 result=fvs;
         }
@@ -350,8 +350,8 @@ public class DefaultTeam {
         ArrayList<Point> rest = (ArrayList<Point>) reste.clone();
         ArrayList<Point> result = (ArrayList<Point>) fvs.clone();
 
-        Point pointDegreMax = points.parallelStream().max(Comparator.comparingInt(element -> voisins(element, points).size())).get();;
-        int degreMax = voisins(pointDegreMax, points).size();
+        Point pointDegreMax = points.parallelStream().max(Comparator.comparingInt(element -> voisins(element, points, edgeThreshold).size())).get();;
+        int degreMax = voisins(pointDegreMax, points, edgeThreshold).size();
 
         Point p;
         Evaluation e = new Evaluation();
