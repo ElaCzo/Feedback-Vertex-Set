@@ -136,25 +136,25 @@ public class DefaultTeam {
 
         int i;
         ArrayList<Point> fvs_tmp = null;
-        for(int t=0; t<10000; t++) {
+        for(int t=0; t<5000; t++) {
             for (int ite = 0; ite < 2; ite++) {
                 fvs = (ArrayList<Point>) points.clone();
                 Point maxi;
-                maxi = pointsIn.parallelStream().max(Comparator.comparingInt(element -> voisins(element, pointsIn).size())).get();
+                maxi = points.parallelStream().max(Comparator.comparingInt(element -> voisins(element, pointsIn).size())).get();
                 ArrayList<Point> test = (ArrayList<Point>) points.clone();
                 if (ite == 1) {
                     test.remove(maxi);
                     maxi = test.parallelStream().max(Comparator.comparingInt(element -> voisins(element, test).size())).get();
                 }
-                ArrayList<Point> neigh = voisins(maxi, pointsIn);
+                ArrayList<Point> neigh = voisins(maxi, points);
 
                 i = 0;
                 int high = neigh.size();
                 while (i <= high) {
-                    for (Point p2 : pointsIn) {
-                        if (voisins(p2, pointsIn).size() <= i) {
+                    for (Point p2 : points) {
+                        if (voisins(p2, points).size() <= i) {
                             fvs.remove(p2);
-                            if (!e.isValid(pointsIn, fvs, edgeThreshold)) fvs.add(p2);
+                            if (!e.isValid(points, fvs, edgeThreshold)) fvs.add(p2);
                         }
                     }
                     i++;
