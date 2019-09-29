@@ -105,7 +105,7 @@ public class DefaultTeam {
         fvs = result;
         System.out.println("Taille fvs après méthode 1 : " + fvs.size());
 
-        points = (ArrayList<Point>) pointsIn.clone();*/
+        points = (ArrayList<Point>) pointsIn.clone();
 
         for (int i = 0; i < 100; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
