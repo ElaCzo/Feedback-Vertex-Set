@@ -74,7 +74,7 @@ public class DefaultTeam {
 
         Point p;
 
-        for (int i = 0; i < 6000; i++) {
+        for (int i = 0; i < 100; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
             fvs = (ArrayList<Point>) points.clone();
             rest = new ArrayList<Point>();
@@ -96,7 +96,7 @@ public class DefaultTeam {
                 else
                     rest.add(choosenOne);
             }
-            System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
+            //System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
 
             if (fvs.size() < result.size())
                 result = fvs;
@@ -105,9 +105,9 @@ public class DefaultTeam {
         fvs = result;
         System.out.println("Taille fvs après méthode 1 : " + fvs.size());
 
-        points = (ArrayList<Point>) pointsIn.clone();
+        points = (ArrayList<Point>) pointsIn.clone();*/
 
-        for (int i = 0; i < 6000; i++) {
+        for (int i = 0; i < 100; i++) {
             Collections.shuffle(points, new Random(System.nanoTime() + i));
             rest = (ArrayList<Point>) points.clone();
             fvs = new ArrayList<Point>();
@@ -124,7 +124,7 @@ public class DefaultTeam {
                 fvs.add(choosenOne);
                 rest.remove(choosenOne);
             }
-            System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
+            //System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
 
             if (fvs.size() < result.size())
                 result = fvs;
@@ -158,6 +158,7 @@ public class DefaultTeam {
                 }
                 i++;
             }
+
             int score = fvs.size();
             int scoreTmp = Integer.MAX_VALUE;
             while (score < scoreTmp) {
@@ -180,7 +181,7 @@ public class DefaultTeam {
 
         System.out.println("Taille fvs après méthode 3 : " + fvs.size());
 
-        for(int t=0; t<100 ; t++) {
+        for(int t=0; t<10000 ; t++) {
             fvs = newAlgo(points);
             if (fvs.size() < result.size() && e.isValid(points, fvs, edgeThreshold))
                 result=fvs;
@@ -311,7 +312,7 @@ public class DefaultTeam {
                     }
                 }
             }
-            System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
+            //System.out.println("GR. Current sol: " + result.size() + ". Found next sol: " + fvs.size());
 
             if (fvs.size() < result.size())
                 result = fvs;
