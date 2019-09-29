@@ -136,46 +136,48 @@ public class DefaultTeam {
 
         int i;
         ArrayList<Point> fvs_tmp = null;
-        for(int ite = 0 ; ite < 2; ite++) {
-            fvs = (ArrayList<Point>) points.clone();
-            Point maxi;
-            maxi = pointsIn.parallelStream().max(Comparator.comparingInt(element -> voisins(element, pointsIn).size())).get();
-            ArrayList<Point> test = (ArrayList<Point>) points.clone();
-            if(ite == 1){
-                test.remove(maxi);
-                maxi = test.parallelStream().max(Comparator.comparingInt(element -> voisins(element, test).size())).get();
-            }
-            ArrayList<Point> neigh = voisins(maxi, pointsIn);
+        for(int t=0; t<10000; t++) {
+            for (int ite = 0; ite < 2; ite++) {
+                fvs = (ArrayList<Point>) points.clone();
+                Point maxi;
+                maxi = pointsIn.parallelStream().max(Comparator.comparingInt(element -> voisins(element, pointsIn).size())).get();
+                ArrayList<Point> test = (ArrayList<Point>) points.clone();
+                if (ite == 1) {
+                    test.remove(maxi);
+                    maxi = test.parallelStream().max(Comparator.comparingInt(element -> voisins(element, test).size())).get();
+                }
+                ArrayList<Point> neigh = voisins(maxi, pointsIn);
 
-            i = 0;
-            int high = neigh.size();
-            while (i <= high) {
-                for (Point p2 : pointsIn) {
-                    if (voisins(p2, pointsIn).size() <= i) {
-                        fvs.remove(p2);
-                        if (!e.isValid(pointsIn, fvs, edgeThreshold)) fvs.add(p2);
+                i = 0;
+                int high = neigh.size();
+                while (i <= high) {
+                    for (Point p2 : pointsIn) {
+                        if (voisins(p2, pointsIn).size() <= i) {
+                            fvs.remove(p2);
+                            if (!e.isValid(pointsIn, fvs, edgeThreshold)) fvs.add(p2);
+                        }
+                    }
+                    i++;
+                }
+
+                int score = fvs.size();
+                int scoreTmp = Integer.MAX_VALUE;
+                while (score < scoreTmp) {
+                    scoreTmp = fvs.size();
+                    improve(points, fvs, edgeThreshold);
+                    cleanUp(fvs);
+                    score = fvs.size();
+                }
+                if (ite == 0) {
+                    fvs_tmp = (ArrayList<Point>) fvs.clone();
+                } else {
+                    if (fvs.size() > fvs_tmp.size()) {
+                        fvs = (ArrayList<Point>) fvs_tmp.clone();
                     }
                 }
-                i++;
+                if (fvs.size() < result.size())
+                    result = fvs;
             }
-
-            int score = fvs.size();
-            int scoreTmp = Integer.MAX_VALUE;
-            while (score < scoreTmp) {
-                scoreTmp = fvs.size();
-                improve(points, fvs, edgeThreshold);
-                cleanUp(fvs);
-                score = fvs.size();
-            }
-            if(ite==0){
-                fvs_tmp = (ArrayList<Point>) fvs.clone();
-            } else {
-                if(fvs.size() > fvs_tmp.size()){
-                    fvs = (ArrayList<Point>) fvs_tmp.clone();
-                }
-            }
-            if (fvs.size() < result.size())
-                result = fvs;
         }
         fvs = result;
 
@@ -355,7 +357,7 @@ public class DefaultTeam {
         ArrayList<Arete> aretes = createAreteList(points);
 
         while(aretes.size()>0){
-            Collections.shuffle(aretes,new Random(System.nanoTime()));
+            Collections.shuffle(aretes, new Random(System.nanoTime()));
             Arete arete = aretes.remove(0);
             fvs.add(arete.a);
             fvs.add(arete.b);
