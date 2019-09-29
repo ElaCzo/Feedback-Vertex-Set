@@ -7,35 +7,6 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class DefaultTeam {
-    public ArrayList<Point> supprimePoints(ArrayList<Point> points, ArrayList<Point> fvs, int threshold) {
-        ArrayList<Point> result = (ArrayList<Point>) fvs.clone();
-        Evaluation eval = new Evaluation();
-        for (Point p : fvs) {
-            result.remove(p);
-            if (!eval.isValid(points, result, threshold)) result.add(p);
-        }
-        return result;
-    }
-
-    public ArrayList<Point> cleanup(ArrayList<Point> points, int edgeThreshold) {
-        ArrayList<Point> voisinsdeP;
-
-        boolean continuer = true;
-        while (continuer) {
-            continuer = false;
-            ArrayList<Point> points2 = (ArrayList<Point>) points.clone();
-            for (Point p : points2) {
-                voisinsdeP = voisins(p, points, edgeThreshold);
-                if (voisinsdeP.size() <= 1) {
-                    continuer = true;
-                    points.remove(p);
-                }
-            }
-        }
-        ArrayList<Point> result = (ArrayList<Point>) points.clone();
-        return result;
-    }
-
     private ArrayList<Point> voisins(Point p, ArrayList<Point> vertices, int edgeThreshold) {
         ArrayList<Point> result = new ArrayList<Point>();
 
@@ -47,7 +18,6 @@ public class DefaultTeam {
     public boolean estArete(Point a, Point b, int edgeThreshold) {
         return a.distance(b) < edgeThreshold;
     }
-
 
     public int degre(Point p, ArrayList<Point> points, int edgeThreshold) {
         int degree = -1;
@@ -99,6 +69,7 @@ public class DefaultTeam {
         return fvs;
     }
 
+    /* Deuxième méthode */
     private ArrayList<Point> methode2(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> result){
         ArrayList<Point> rest = (ArrayList<Point>) points.clone();
         ArrayList<Point> fvs = new ArrayList<Point>();
@@ -132,6 +103,37 @@ public class DefaultTeam {
         return fvs;
     }
 
+    public ArrayList<Point> supprimePoints(ArrayList<Point> points, ArrayList<Point> fvs, int edgeThreshold) {
+        ArrayList<Point> result = (ArrayList<Point>) fvs.clone();
+        Evaluation eval = new Evaluation();
+        for (Point p : fvs) {
+            result.remove(p);
+            if (!eval.isValid(points, result, edgeThreshold)) result.add(p);
+        }
+        return result;
+    }
+
+    public ArrayList<Point> cleanup(ArrayList<Point> points, int edgeThreshold) {
+        ArrayList<Point> voisinsdeP;
+        ArrayList<Point> points1 = (ArrayList<Point>) points.clone();
+
+        boolean continuer = true;
+        while (continuer) {
+            continuer = false;
+            ArrayList<Point> points2 = (ArrayList<Point>) points1.clone();
+            for (Point p : points2) {
+                voisinsdeP = voisins(p, points1, edgeThreshold);
+                if (voisinsdeP.size() <= 1) {
+                    continuer = true;
+                    points1.remove(p);
+                }
+            }
+        }
+        ArrayList<Point> result = (ArrayList<Point>) points1.clone();
+        return result;
+    }
+
+    /* Troisième méthode. */
     private ArrayList<Point> methode3(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> result){
         int i;
         ArrayList<Point> fvs;
@@ -236,6 +238,7 @@ public class DefaultTeam {
         return fvs;
     }
 
+    /* Quatrième méthode. */
     private ArrayList<Point> methode4(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> result){
         ArrayList<Point> fvs;
         Evaluation e= new Evaluation();
