@@ -65,7 +65,6 @@ public class DefaultTeam {
 
         Evaluation e = new Evaluation();
 
-        long seed = System.nanoTime();
         int degreMax = 0, d;
 
         ArrayList<Point> points = (ArrayList<Point>) pointsIn.clone();
@@ -136,8 +135,9 @@ public class DefaultTeam {
 
         int i;
         ArrayList<Point> fvs_tmp = null;
-        for(int t=0; t<5000; t++) {
+        for(int t=0; t<1000; t++) {
             for (int ite = 0; ite < 2; ite++) {
+                Collections.shuffle(points, new Random(System.nanoTime() + t));
                 fvs = (ArrayList<Point>) points.clone();
                 Point maxi;
                 maxi = points.parallelStream().max(Comparator.comparingInt(element -> voisins(element, pointsIn).size())).get();
@@ -207,7 +207,7 @@ public class DefaultTeam {
         Point rr, ss;
         while (continuer) {
             // shuffle ici
-            Collections.shuffle(fvs, new Random(seed));
+            Collections.shuffle(fvs, new Random(System.nanoTime()));
             continuer = false;
             for (i = 0; i < fvs.size() && !continuer; i++) {
                 a = fvs.remove(i);
@@ -218,7 +218,7 @@ public class DefaultTeam {
                         c = fvs.remove(k);
                         if ((estArete(a, b, edgeThreshold) && (estArete(b, c, edgeThreshold) || estArete(a, c, edgeThreshold)))
                                 || (estArete(b, c, edgeThreshold)) && estArete(a, c, edgeThreshold)) {
-                            Collections.shuffle(reste, new Random(seed));
+                            Collections.shuffle(reste, new Random(System.nanoTime()));
                             for (r = 0; r < reste.size(); r++) {
                                 rr = reste.get(r);
                                 fvs.add(rr);
@@ -260,7 +260,7 @@ public class DefaultTeam {
         ArrayList<Point> fvsClone = (ArrayList<Point>) fvs.clone();
 
         // shuffle ici
-        Collections.shuffle(fvs, new Random(seed));
+        Collections.shuffle(fvs, new Random(System.nanoTime()));
         for (i = 0; i < fvs.size() && !continuer; i++) {
             a = fvs.remove(i);
             for (j = i + 1; j < fvs.size() && !continuer; j++) {
@@ -268,7 +268,7 @@ public class DefaultTeam {
 
                 if (estArete(a, b, edgeThreshold)) {
                     // shuffle reste aussi si ça prend pas trop de temps
-                    Collections.shuffle(reste, new Random(seed));
+                    Collections.shuffle(reste, new Random(System.nanoTime()));
                     for (Point u : reste) {
                         fvs.add(u);
                         if (e.isValid(points, fvs, edgeThreshold)) {
@@ -288,8 +288,6 @@ public class DefaultTeam {
 
         System.out.println("Local searching 1->2 : " + fvs.size());
 
-        fvs = result;
-
         reste = (ArrayList<Point>) points.clone();
         reste.removeAll(fvs);
 
@@ -301,7 +299,7 @@ public class DefaultTeam {
             reste = (ArrayList<Point>) rest.clone();
             fvs = (ArrayList<Point>) fvsClone.clone();
 
-            Collections.shuffle(fvs, new Random(seed + t));
+            Collections.shuffle(fvs, new Random(System.nanoTime() + t));
             for (i = 0; i < degreMax; i++) {
                 for (j = 0; j < fvs.size(); j++) {
                     p = points.get(j);
