@@ -140,7 +140,7 @@ public class DefaultTeam {
         ArrayList<Point> fvs_tmp = null;
         Evaluation e = new Evaluation();
 
-        for(int t=0; t<100; t++) {
+        for(int t=0; t<1000; t++) {
             Collections.shuffle(points, new Random(System.nanoTime() + t));
             for (int ite = 0; ite < 2; ite++) {
                 fvs = (ArrayList<Point>) points.clone();
